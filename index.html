@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>《暗黑》人物关系图</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        #graph {
+            width: 90%;
+            height: 600px;
+            margin: 20px auto;
+            border: 1px solid #444;
+        }
+
+        .filter {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>《暗黑》人物关系图</h1>
+    <div class="filter">
+        <label>选择时间线：</label>
+        <select id="timeline">
+            <option value="all">全部</option>
+            <option value="1953">1953</option>
+            <option value="1986">1986</option>
+            <option value="2019">2019</option>
+        </select>
+    </div>
+    <div id="graph"></div>
+
+    <!-- 引入Vis.js库 -->
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
