@@ -18,21 +18,22 @@ var nodes = new vis.DataSet([
     { id: 16, label: "Bartosz\n(巴托什)", group: "Tiedemann", title: "Regina的儿子", image: "imgs/bartosz.jpg" }
 ]);
 
+// 边数据（添加id便于操作）
 var edges = new vis.DataSet([
-    { from: 1, to: 2, label: "儿子" },
-    { from: 2, to: 3, label: "丈夫" },
-    { from: 4, to: 2, label: "养母" },
-    { from: 5, to: 2, label: "父亲" },
-    { from: 5, to: 6, label: "丈夫" },
-    { from: 5, to: 7, label: "父亲" },
-    { from: 5, to: 8, label: "父亲" },
-    { from: 9, to: 10, label: "妻子" },
-    { from: 9, to: 11, label: "母亲" },
-    { from: 12, to: 10, label: "父亲" },
-    { from: 13, to: 14, label: "母亲" },
-    { from: 14, to: 15, label: "妻子" },
-    { from: 14, to: 16, label: "母亲" },
-    { from: 1, to: 7, label: "恋人" }
+    { id: "e1", from: 1, to: 2, label: "儿子" },
+    { id: "e2", from: 2, to: 3, label: "丈夫" },
+    { id: "e3", from: 4, to: 2, label: "养母" },
+    { id: "e4", from: 5, to: 2, label: "父亲" },
+    { id: "e5", from: 5, to: 6, label: "丈夫" },
+    { id: "e6", from: 5, to: 7, label: "父亲" },
+    { id: "e7", from: 5, to: 8, label: "父亲" },
+    { id: "e8", from: 9, to: 10, label: "妻子" },
+    { id: "e9", from: 9, to: 11, label: "母亲" },
+    { id: "e10", from: 12, to: 10, label: "父亲" },
+    { id: "e11", from: 13, to: 14, label: "母亲" },
+    { id: "e12", from: 14, to: 15, label: "妻子" },
+    { id: "e13", from: 14, to: 16, label: "母亲" },
+    { id: "e14", from: 1, to: 7, label: "恋人" }
 ]);
 
 // 创建网络图
@@ -45,12 +46,14 @@ var options = {
         font: { size: 14, color: "#e0e0e0", face: "Roboto" },
         labelHighlightBold: true,
         borderWidth: 2,
-        shadow: true
+        shadow: true,
+        fixed: true // 固定节点位置
     },
     edges: {
         font: { size: 12, color: "#e0e0e0", face: "Roboto" },
         arrows: "to",
-        color: { color: "#4a5a4a" }
+        color: { color: "#4a5a4a" },
+        smooth: { enabled: true, type: "cubicBezier" } // 使用贝塞尔曲线
     },
     groups: {
         Kahnwald: { color: { border: "#6a4e4e" } },
@@ -78,6 +81,11 @@ var options = {
     },
     layout: {
         improvedLayout: true
+    },
+    interaction: {
+        dragNodes: false, // 禁止拖动节点
+        dragView: true,
+        zoomView: true
     }
 };
 var network = new vis.Network(container, data, options);
@@ -94,22 +102,70 @@ setTimeout(function () {
     network.fit(); // 调整视角适配画布
 }, 3000);
 
-// 时间线筛选功能（带动画）
+// 双击边时添加控制点
+let selectedEdge = null;
+network.on("doubleClick", function (params) {
+    if (params.edges.length > 0) {
+        selectedEdge = params.edges[0];
+        const edge = edges.get(selectedEdge);
+        const fromPos = network.getPosition(edge.from);
+        const toPos = network.getPosition(edge.to);
+        const midX = (fromPos.x + toPos.x) / 2;
+        const midY = (fromPos.y + toPos.y) / 2;
+
+        // 添加控制点节点（临时）
+        const controlId = "control_" + selectedEdge;
+        if (!nodes.get(controlId)) {
+            nodes.add({
+                id: controlId,
+                shape: "dot",
+                size: 10,
+                x: midX,
+                y: midY,
+                fixed: false,
+                color: "#ff0000"
+            });
+        }
+    }
+});
+
+// 拖动控制点更新边形状
+network.on("dragEnd", function (params) {
+    if (params.nodes.length > 0 && params.nodes[0].startsWith("control_")) {
+        const controlId = params.nodes[0];
+        const edgeId = controlId.replace("control_", "");
+        const controlPos = network.getPosition(controlId);
+
+        // 更新边的贝塞尔曲线控制点
+        edges.update({
+            id: edgeId,
+            smooth: {
+                enabled: true,
+                type: "cubicBezier",
+                roundness: 0.5,
+                forceDirection: "none",
+                controlPoints: [{ x: controlPos.x, y: controlPos.y }]
+            }
+        });
+    }
+});
+
+// 时间线筛选功能
 document.getElementById("timeline").addEventListener("change", function () {
     var selected = this.value;
     var graph = document.getElementById("graph");
     graph.classList.add("fade");
-    network.setOptions({ physics: { enabled: true } }); // 筛选时启用物理引擎
+    network.setOptions({ physics: { enabled: true } });// 筛选时启用物理引擎
     setTimeout(function () {
         var filteredNodes = nodes.get().filter(function (node) {
-            return selected === "all" || node.title.includes(selected);
+            return selected === "all" || node.title.includes(selected) && !node.id.startsWith("control_");
         });
         network.setData({ nodes: new vis.DataSet(filteredNodes), edges: edges });
         graph.classList.remove("fade");
-        // 3秒后固定
         setTimeout(function () {
             network.setOptions({ physics: { enabled: false } });
             network.fit();
         }, 3000);
     }, 500);
 });
+
