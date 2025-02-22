@@ -68,6 +68,11 @@ var options = {
             damping: 0.09,
             avoidOverlap: 1 // 避免节点重叠
         },
+        stabilization: {
+            enabled: true,
+            iterations: 1000, // 加快稳定过程
+            fit: true
+        },
         minVelocity: 0.75,
         solver: "barnesHut"
     },
@@ -77,16 +82,28 @@ var options = {
 };
 var network = new vis.Network(container, data, options);
 
+// 在3秒后关闭物理引擎，固定布局
+setTimeout(function () {
+    network.setOptions({ physics: { enabled: false } });
+    console.log("Physics disabled, nodes fixed after 3 seconds");
+}, 3000);
+
 // 时间线筛选功能（带动画）
 document.getElementById("timeline").addEventListener("change", function () {
     var selected = this.value;
     var graph = document.getElementById("graph");
-    graph.classList.add("fade"); // 淡出
+    graph.classList.add("fade");
+    // 筛选时短暂启用物理引擎
+    network.setOptions({ physics: { enabled: true } });
     setTimeout(function () {
         var filteredNodes = nodes.get().filter(function (node) {
             return selected === "all" || node.title.includes(selected);
         });
         network.setData({ nodes: new vis.DataSet(filteredNodes), edges: edges });
-        graph.classList.remove("fade"); // 淡入
+        graph.classList.remove("fade");
+        // 筛选后3秒再次固定
+        setTimeout(function () {
+            network.setOptions({ physics: { enabled: false } });
+        }, 3000);
     }, 500);
 });
