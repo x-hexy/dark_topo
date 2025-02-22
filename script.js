@@ -40,8 +40,8 @@ var container = document.getElementById("graph");
 var data = { nodes: nodes, edges: edges };
 var options = {
     nodes: {
-        shape: "image", // 使用图片作为节点形状
-        size: 50, // 图片大小
+        shape: "image",
+        size: 50,
         font: { size: 14, color: "#e0e0e0", face: "Roboto" },
         labelHighlightBold: true,
         borderWidth: 2,
@@ -58,7 +58,22 @@ var options = {
         Doppler: { color: { border: "#4e4e6a" } },
         Tiedemann: { color: { border: "#6a6a4e" } }
     },
-    physics: { enabled: true, stabilization: true }
+    physics: {
+        enabled: true,
+        barnesHut: {
+            gravitationalConstant: -3000, // 增加斥力
+            centralGravity: 0.3,
+            springLength: 150, // 边长增加到150像素
+            springConstant: 0.05,
+            damping: 0.09,
+            avoidOverlap: 1 // 避免节点重叠
+        },
+        minVelocity: 0.75,
+        solver: "barnesHut"
+    },
+    layout: {
+        improvedLayout: true // 优化布局
+    }
 };
 var network = new vis.Network(container, data, options);
 
