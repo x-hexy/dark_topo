@@ -61,31 +61,37 @@ var options = {
     physics: {
         enabled: true,
         barnesHut: {
-            gravitationalConstant: -3000, // 增加斥力
-            centralGravity: 0.3,
-            springLength: 150, // 边长增加到150像素
-            springConstant: 0.05,
-            damping: 0.09,
-            avoidOverlap: 1 // 避免节点重叠
+            gravitationalConstant: -2000, // 减弱斥力，节点更靠近
+            centralGravity: 0.5, // 增强家族内聚力
+            springLength: 100, // 缩短边长，关系更紧凑
+            springConstant: 0.08, // 增强弹性
+            damping: 0.4, // 更快减速稳定
+            avoidOverlap: 1
         },
         stabilization: {
             enabled: true,
-            iterations: 1000, // 加快稳定过程
+            iterations: 1000,
             fit: true
         },
-        minVelocity: 0.75,
+        minVelocity: 0.1, // 更快停止
         solver: "barnesHut"
     },
     layout: {
-        improvedLayout: true // 优化布局
+        improvedLayout: true
     }
 };
 var network = new vis.Network(container, data, options);
 
-// 在3秒后关闭物理引擎，固定布局
-setTimeout(function () {
+// 3秒后固定布局
+network.once("stabilizationIterationsDone", function () {
+    // 稳定后立即关闭物理引擎
     network.setOptions({ physics: { enabled: false } });
-    console.log("Physics disabled, nodes fixed after 3 seconds");
+    console.log("Stabilization complete, physics disabled");
+});
+setTimeout(function () {
+    // 确保3秒内强制停止
+    network.setOptions({ physics: { enabled: false } });
+    network.fit(); // 调整视角适配画布
 }, 3000);
 
 // 时间线筛选功能（带动画）
@@ -93,17 +99,17 @@ document.getElementById("timeline").addEventListener("change", function () {
     var selected = this.value;
     var graph = document.getElementById("graph");
     graph.classList.add("fade");
-    // 筛选时短暂启用物理引擎
-    network.setOptions({ physics: { enabled: true } });
+    network.setOptions({ physics: { enabled: true } }); // 筛选时启用物理引擎
     setTimeout(function () {
         var filteredNodes = nodes.get().filter(function (node) {
             return selected === "all" || node.title.includes(selected);
         });
         network.setData({ nodes: new vis.DataSet(filteredNodes), edges: edges });
         graph.classList.remove("fade");
-        // 筛选后3秒再次固定
+        // 3秒后固定
         setTimeout(function () {
             network.setOptions({ physics: { enabled: false } });
+            network.fit();
         }, 3000);
     }, 500);
 });
