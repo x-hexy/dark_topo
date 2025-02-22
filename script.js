@@ -47,7 +47,7 @@ var options = {
         labelHighlightBold: true,
         borderWidth: 2,
         shadow: true,
-        fixed: true // 固定节点位置
+        // fixed: true // 固定节点位置
     },
     edges: {
         font: { size: 12, color: "#e0e0e0", face: "Roboto" },
@@ -83,7 +83,7 @@ var options = {
         improvedLayout: true
     },
     interaction: {
-        dragNodes: false, // 禁止拖动节点
+        // dragNodes: false, // 禁止拖动节点
         dragView: true,
         zoomView: true
     }
