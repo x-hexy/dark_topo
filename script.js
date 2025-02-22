@@ -1,21 +1,21 @@
-// 节点和边数据（与之前一致）
+// 节点数据（添加image属性）
 var nodes = new vis.DataSet([
-    { id: 1, label: "Jonas\n(乔纳斯)", group: "Kahnwald", title: "2019年主角，Michael和Hannah的儿子" },
-    { id: 2, label: "Michael/Mikkel\n(迈克尔/米克尔)", group: "Kahnwald", title: "2019年Jonas的父亲，1986年穿越者" },
-    { id: 3, label: "Hannah\n(汉娜)", group: "Kahnwald", title: "Jonas的母亲，暗恋Ulrich" },
-    { id: 4, label: "Ines\n(伊内斯)", group: "Kahnwald", title: "1986年收养Mikkel" },
-    { id: 5, label: "Ulrich\n(乌尔里希)", group: "Nielsen", title: "2019年警察，Mikkel的父亲" },
-    { id: 6, label: "Katharina\n(卡塔琳娜)", group: "Nielsen", title: "Ulrich的妻子" },
-    { id: 7, label: "Martha\n(玛莎)", group: "Nielsen", title: "Ulrich的女儿，Jonas的恋人" },
-    { id: 8, label: "Magnus\n(马格努斯)", group: "Nielsen", title: "Ulrich的长子" },
-    { id: 9, label: "Charlotte\n(夏洛特)", group: "Doppler", title: "2019年警察局长" },
-    { id: 10, label: "Peter\n(彼得)", group: "Doppler", title: "Charlotte的丈夫" },
-    { id: 11, label: "Elisabeth\n(伊丽莎白)", group: "Doppler", title: "Charlotte的小女儿" },
-    { id: 12, label: "Helge\n(黑尔格)", group: "Doppler", title: "1986年核电站工人" },
-    { id: 13, label: "Claudia\n(克劳迪娅)", group: "Tiedemann", title: "1986年核电站负责人" },
-    { id: 14, label: "Regina\n(雷吉娜)", group: "Tiedemann", title: "2019年旅馆老板" },
-    { id: 15, label: "Aleksander\n(亚历山大)", group: "Tiedemann", title: "Regina的丈夫" },
-    { id: 16, label: "Bartosz\n(巴托什)", group: "Tiedemann", title: "Regina的儿子" }
+    { id: 1, label: "Jonas\n(乔纳斯)", group: "Kahnwald", title: "2019年主角，Michael和Hannah的儿子", image: "images/jonas.jpg" },
+    { id: 2, label: "Michael/Mikkel\n(迈克尔/米克尔)", group: "Kahnwald", title: "2019年Jonas的父亲，1986年穿越者", image: "images/michael.jpg" },
+    { id: 3, label: "Hannah\n(汉娜)", group: "Kahnwald", title: "Jonas的母亲，暗恋Ulrich", image: "images/hannah.jpg" },
+    { id: 4, label: "Ines\n(伊内斯)", group: "Kahnwald", title: "1986年收养Mikkel", image: "images/ines.jpg" },
+    { id: 5, label: "Ulrich\n(乌尔里希)", group: "Nielsen", title: "2019年警察，Mikkel的父亲", image: "images/ulrich.jpg" },
+    { id: 6, label: "Katharina\n(卡塔琳娜)", group: "Nielsen", title: "Ulrich的妻子", image: "images/katharina.jpg" },
+    { id: 7, label: "Martha\n(玛莎)", group: "Nielsen", title: "Ulrich的女儿，Jonas的恋人", image: "images/martha.jpg" },
+    { id: 8, label: "Magnus\n(马格努斯)", group: "Nielsen", title: "Ulrich的长子", image: "images/magnus.jpg" },
+    { id: 9, label: "Charlotte\n(夏洛特)", group: "Doppler", title: "2019年警察局长", image: "images/charlotte.jpg" },
+    { id: 10, label: "Peter\n(彼得)", group: "Doppler", title: "Charlotte的丈夫", image: "images/peter.jpg" },
+    { id: 11, label: "Elisabeth\n(伊丽莎白)", group: "Doppler", title: "Charlotte的小女儿", image: "images/elisabeth.jpg" },
+    { id: 12, label: "Helge\n(黑尔格)", group: "Doppler", title: "1986年核电站工人", image: "images/helge.jpg" },
+    { id: 13, label: "Claudia\n(克劳迪娅)", group: "Tiedemann", title: "1986年核电站负责人", image: "images/claudia.jpg" },
+    { id: 14, label: "Regina\n(雷吉娜)", group: "Tiedemann", title: "2019年旅馆老板", image: "images/regina.jpg" },
+    { id: 15, label: "Aleksander\n(亚历山大)", group: "Tiedemann", title: "Regina的丈夫", image: "images/aleksander.jpg" },
+    { id: 16, label: "Bartosz\n(巴托什)", group: "Tiedemann", title: "Regina的儿子", image: "images/bartosz.jpg" }
 ]);
 
 var edges = new vis.DataSet([
@@ -40,9 +40,11 @@ var container = document.getElementById("graph");
 var data = { nodes: nodes, edges: edges };
 var options = {
     nodes: {
-        shape: "box",
+        shape: "image", // 使用图片作为节点形状
+        size: 50, // 图片大小
         font: { size: 14, color: "#e0e0e0", face: "Roboto" },
-        borderWidth: 1,
+        labelHighlightBold: true,
+        borderWidth: 2,
         shadow: true
     },
     edges: {
@@ -51,10 +53,10 @@ var options = {
         color: { color: "#4a5a4a" }
     },
     groups: {
-        Kahnwald: { color: { background: "#4a2e2e", border: "#6a4e4e" } },
-        Nielsen: { color: { background: "#2e4a2e", border: "#4e6a4e" } },
-        Doppler: { color: { background: "#2e2e4a", border: "#4e4e6a" } },
-        Tiedemann: { color: { background: "#4a4a2e", border: "#6a6a4e" } }
+        Kahnwald: { color: { border: "#6a4e4e" } },
+        Nielsen: { color: { border: "#4e6a4e" } },
+        Doppler: { color: { border: "#4e4e6a" } },
+        Tiedemann: { color: { border: "#6a6a4e" } }
     },
     physics: { enabled: true, stabilization: true }
 };
