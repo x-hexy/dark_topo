@@ -18,22 +18,22 @@ var nodes = new vis.DataSet([
     { id: 16, label: "Bartosz\n(巴托什)", group: "Tiedemann", title: "Regina的儿子", image: "imgs/bartosz.jpg" }
 ]);
 
-// 边数据（添加id便于操作）
+// 边数据（添加id）
 var edges = new vis.DataSet([
-    { id: "e1", from: 1, to: 2, label: "儿子" },
-    { id: "e2", from: 2, to: 3, label: "丈夫" },
-    { id: "e3", from: 4, to: 2, label: "养母" },
-    { id: "e4", from: 5, to: 2, label: "父亲" },
-    { id: "e5", from: 5, to: 6, label: "丈夫" },
-    { id: "e6", from: 5, to: 7, label: "父亲" },
-    { id: "e7", from: 5, to: 8, label: "父亲" },
-    { id: "e8", from: 9, to: 10, label: "妻子" },
-    { id: "e9", from: 9, to: 11, label: "母亲" },
-    { id: "e10", from: 12, to: 10, label: "父亲" },
-    { id: "e11", from: 13, to: 14, label: "母亲" },
-    { id: "e12", from: 14, to: 15, label: "妻子" },
-    { id: "e13", from: 14, to: 16, label: "母亲" },
-    { id: "e14", from: 1, to: 7, label: "恋人" }
+    { id: "e1", from: 1, to: 2, label: "儿子", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e2", from: 2, to: 3, label: "丈夫", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e3", from: 4, to: 2, label: "养母", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e4", from: 5, to: 2, label: "父亲", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e5", from: 5, to: 6, label: "丈夫", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e6", from: 5, to: 7, label: "父亲", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e7", from: 5, to: 8, label: "父亲", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e8", from: 9, to: 10, label: "妻子", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e9", from: 9, to: 11, label: "母亲", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e10", from: 12, to: 10, label: "父亲", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e11", from: 13, to: 14, label: "母亲", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e12", from: 14, to: 15, label: "妻子", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e13", from: 14, to: 16, label: "母亲", smooth: { enabled: true, type: "cubicBezier" } },
+    { id: "e14", from: 1, to: 7, label: "恋人", smooth: { enabled: true, type: "cubicBezier" } }
 ]);
 
 // 创建网络图
@@ -113,7 +113,6 @@ network.on("doubleClick", function (params) {
         const midX = (fromPos.x + toPos.x) / 2;
         const midY = (fromPos.y + toPos.y) / 2;
 
-        // 添加控制点节点（临时）
         const controlId = "control_" + selectedEdge;
         if (!nodes.get(controlId)) {
             nodes.add({
@@ -136,17 +135,20 @@ network.on("dragEnd", function (params) {
         const edgeId = controlId.replace("control_", "");
         const controlPos = network.getPosition(controlId);
 
-        // 更新边的贝塞尔曲线控制点
+        // 更新边的贝塞尔曲线
         edges.update({
             id: edgeId,
             smooth: {
                 enabled: true,
                 type: "cubicBezier",
-                roundness: 0.5,
-                forceDirection: "none",
-                controlPoints: [{ x: controlPos.x, y: controlPos.y }]
+                roundness: 0.5, // 控制曲线弯曲程度
+                controlX1: controlPos.x, // 手动指定控制点坐标
+                controlY1: controlPos.y
             }
         });
+
+        // 强制重绘网络图
+        network.redraw();
     }
 });
 
@@ -155,7 +157,7 @@ document.getElementById("timeline").addEventListener("change", function () {
     var selected = this.value;
     var graph = document.getElementById("graph");
     graph.classList.add("fade");
-    network.setOptions({ physics: { enabled: true } });// 筛选时启用物理引擎
+    network.setOptions({ physics: { enabled: true } });
     setTimeout(function () {
         var filteredNodes = nodes.get().filter(function (node) {
             return selected === "all" || node.title.includes(selected) && !node.id.startsWith("control_");
