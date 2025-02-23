@@ -62,16 +62,16 @@ var options = {
     physics: {
         enabled: true,
         barnesHut: {
-            gravitationalConstant: -2000,
-            centralGravity: 0.5,
-            springLength: 100,
-            springConstant: 0.08,
+            gravitationalConstant: -3000, // 增大斥力，避免重叠
+            centralGravity: 0.3,
+            springLength: 200, // 增大初始边长，确保间距
+            springConstant: 0.05,
             damping: 0.4,
-            avoidOverlap: 1
+            avoidOverlap: 1 // 强制避免重叠
         },
         stabilization: {
             enabled: true,
-            iterations: 1000,
+            iterations: 2000, // 增加迭代次数，预计算更精确
             fit: true
         },
         minVelocity: 0.1,
@@ -83,11 +83,14 @@ var options = {
 };
 var network = new vis.Network(container, data, options);
 
-// 3秒后固定布局
-network.once("stabilizationIterationsDone", function () {
+// 等待稳定化完成后再显示
+network.on("stabilizationIterationsDone", function () {
     network.setOptions({ physics: { enabled: false } });
-    console.log("Stabilization complete, physics disabled");
+    network.fit(); // 调整视角适配画布
+    console.log("Stabilization complete, layout fixed");
 });
+
+// 强制3秒后固定（备用）
 setTimeout(function () {
     network.setOptions({ physics: { enabled: false } });
     network.fit();
@@ -105,6 +108,10 @@ document.getElementById("timeline").addEventListener("change", function () {
         });
         network.setData({ nodes: new vis.DataSet(filteredNodes), edges: edges });
         graph.classList.remove("fade");
+        network.once("stabilizationIterationsDone", function () {
+            network.setOptions({ physics: { enabled: false } });
+            network.fit();
+        });
         setTimeout(function () {
             network.setOptions({ physics: { enabled: false } });
             network.fit();
