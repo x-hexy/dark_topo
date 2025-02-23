@@ -29,7 +29,7 @@ var nodes = new vis.DataSet([
     { id: 24, label: "Egon\n(埃贡)", group: "Tiedemann", title: "1986/1953年警察", image: "imgs/egon.jpg" },
 
     { id: 25, label: "Noah\n(诺亚)", group: "Other", title: "2019/1986/1953年神秘牧师", image: "imgs/noah.jpg" },
-    { id: 26, label: "H.G. Tannhaus\n(塔恩豪斯)", group: "Other", title: "1986年钟表匠，时间机器制造者", image: "images/tannhaus.jpg" }
+    { id: 26, label: "H.G. Tannhaus\n(塔恩豪斯)", group: "Other", title: "1986年钟表匠，时间机器制造者", image: "imgs/tannhaus.jpg" }
 ]);
 
 // 边数据
