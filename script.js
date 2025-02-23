@@ -62,9 +62,9 @@ var options = {
     physics: {
         enabled: true,
         barnesHut: {
-            gravitationalConstant: -3000, // 增大斥力，避免重叠
+            gravitationalConstant: -4000, // 增大斥力，避免重叠
             centralGravity: 0.3,
-            springLength: 200, // 增大初始边长，确保间距
+            springLength: 500, // 增大初始边长，确保间距
             springConstant: 0.05,
             damping: 0.4,
             avoidOverlap: 1 // 强制避免重叠
