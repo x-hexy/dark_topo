@@ -44,6 +44,7 @@
    - 提交：`Added Dark style background music with play/pause control`
 
 ## 文件结构
+```
 dark-family-tree/
 ├── index.html              # 主页面
 ├── script.js               # 图谱逻辑
@@ -55,6 +56,7 @@ dark-family-tree/
 │   └── background-music.mp3
 ├── winden_forest.jpg   # 森林背景
 └── sicmundus.png       # 三叉符号
+```
 
 ## 使用方法
 1. 访问GitHub Pages：[https://x-hexy.github.io/dark_topo/](https://x-hexy.github.io/dark_topo/)
