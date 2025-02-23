@@ -34,32 +34,32 @@ var nodes = new vis.DataSet([
 
 // 边数据
 var edges = new vis.DataSet([
-    { from: 1, to: 2, label: "儿子" },
-    { from: 2, to: 3, label: "丈夫" },
-    { from: 4, to: 2, label: "养母" },
-    { from: 1, to: 5, label: "未来自己" },
-    { from: 6, to: 2, label: "父亲" },
-    { from: 6, to: 7, label: "丈夫" },
-    { from: 6, to: 8, label: "父亲" },
-    { from: 6, to: 9, label: "父亲" },
-    { from: 10, to: 6, label: "儿子" },
-    { from: 10, to: 11, label: "丈夫" },
-    { from: 10, to: 12, label: "儿子" },
-    { from: 13, to: 10, label: "儿子" },
-    { from: 1, to: 8, label: "恋人" },
-    { from: 14, to: 15, label: "妻子" },
-    { from: 14, to: 16, label: "母亲" },
-    { from: 14, to: 19, label: "母亲" },
-    { from: 17, to: 15, label: "父亲" },
-    { from: 18, to: 17, label: "儿子" },
-    { from: 20, to: 21, label: "母亲" },
-    { from: 21, to: 22, label: "妻子" },
-    { from: 21, to: 23, label: "母亲" },
-    { from: 24, to: 20, label: "女儿" },
-    { from: 17, to: 25, label: "助手" },
-    { from: 23, to: 25, label: "合作者" },
-    { from: 5, to: 26, label: "时间机器提供者" }, // Stranger与Tannhaus的关系
-    { from: 20, to: 26, label: "技术顾问" }    // Claudia与Tannhaus的联系
+    { from: 1, to: 2, label: "父子" },        // Jonas -> Michael (父子)
+    { from: 2, to: 3, label: "夫妻" },        // Michael -> Hannah (夫妻)
+    { from: 4, to: 2, label: "养母" },        // Ines -> Michael (不变)
+    { from: 1, to: 5, label: "未来自己" },    // Jonas -> Stranger (不变)
+    { from: 6, to: 2, label: "父子" },        // Ulrich -> Michael (父子)
+    { from: 6, to: 7, label: "夫妻" },        // Ulrich -> Katharina (夫妻)
+    { from: 6, to: 8, label: "父女" },        // Ulrich -> Martha (父女)
+    { from: 6, to: 9, label: "父子" },        // Ulrich -> Magnus (父子)
+    { from: 10, to: 6, label: "父子" },       // Tronte -> Ulrich (父子)
+    { from: 10, to: 11, label: "夫妻" },      // Tronte -> Jana (夫妻)
+    { from: 10, to: 12, label: "父子" },      // Tronte -> Mads (父子)
+    { from: 13, to: 10, label: "母子" },      // Agnes -> Tronte (母子)
+    { from: 1, to: 8, label: "恋人" },        // Jonas -> Martha (不变)
+    { from: 14, to: 15, label: "夫妻" },      // Charlotte -> Peter (夫妻)
+    { from: 14, to: 16, label: "母女" },      // Charlotte -> Elisabeth (母女)
+    { from: 14, to: 19, label: "母女" },      // Charlotte -> Franziska (母女)
+    { from: 17, to: 15, label: "父子" },      // Helge -> Peter (父子)
+    { from: 18, to: 17, label: "父子" },      // Bernd -> Helge (父子)
+    { from: 20, to: 21, label: "母女" },      // Claudia -> Regina (母女)
+    { from: 21, to: 22, label: "夫妻" },      // Regina -> Aleksander (夫妻)
+    { from: 21, to: 23, label: "母子" },      // Regina -> Bartosz (母子)
+    { from: 24, to: 20, label: "父女" },      // Egon -> Claudia (父女)
+    { from: 17, to: 25, label: "助手" },      // Helge -> Noah (不变)
+    { from: 23, to: 25, label: "合作者" },    // Bartosz -> Noah (不变)
+    { from: 5, to: 26, label: "时间机器提供者" }, // Stranger -> Tannhaus (不变)
+    { from: 26, to: 20, label: "技术顾问" }  // Tannhaus -> Claudia (方向调整)
 ]);
 
 // 创建网络图
@@ -82,7 +82,7 @@ var options = {
             strokeWidth: 2,     // 加粗描边
             strokeColor: "#000000" // 黑色描边增强文字清晰度
         },
-        arrows: "to",
+        arrows: { to: { enabled: false } }, // 移除箭头
         color: {
             color: "#cccccc",   // 连线改为亮灰色（从#4a5a4a调亮）
             highlight: "#ffffff" // 高亮时为纯白
