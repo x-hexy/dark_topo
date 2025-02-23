@@ -87,8 +87,16 @@
             <option value="2019">2019</option>
         </select>
     </div>
-    <!-- <p style="color: #e0e0e0; font-size: 14px;">双击连线调整形状（实验功能）</p> -->
     <div id="graph"></div>
+
+    <!-- 背景音乐 -->
+    <audio id="backgroundMusic" loop>
+        <source src="audio/background-music.mp3" type="audio/mpeg">
+        你的浏览器不支持音频播放。
+    </audio>
+    <div class="music-control">
+        <button onclick="toggleMusic()">播放/暂停</button>
+    </div>
 
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="script.js"></script>

@@ -49,7 +49,7 @@ var options = {
         shadow: true
     },
     edges: {
-        font: { size: 12, color: "#e0e0e0", face: "Roboto" },
+        font: { size: 12, color: "#eded26", face: "Roboto" }, //#e0e0e0
         arrows: "to",
         color: { color: "#4a5a4a" }
     },
@@ -94,7 +94,7 @@ network.on("stabilizationIterationsDone", function () {
 setTimeout(function () {
     network.setOptions({ physics: { enabled: false } });
     network.fit();
-}, 3000);
+}, 2000);
 
 // 时间线筛选功能
 document.getElementById("timeline").addEventListener("change", function () {
@@ -118,3 +118,18 @@ document.getElementById("timeline").addEventListener("change", function () {
         }, 3000);
     }, 500);
 });
+
+// 音乐控制函数
+var audio = document.getElementById("backgroundMusic");
+audio.volume = 0.3; // 设置音量，默认30%
+audio.play(); // 自动播放（浏览器可能限制，需用户交互）
+
+function toggleMusic() {
+    if (audio.paused) {
+        audio.play();
+        document.querySelector(".music-control button").textContent = "暂停";
+    } else {
+        audio.pause();
+        document.querySelector(".music-control button").textContent = "播放";
+    }
+}
