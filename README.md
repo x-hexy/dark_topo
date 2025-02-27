@@ -2,12 +2,13 @@
 
 这是一个基于Netflix剧集《Dark》的交互式家族关系图网站，使用HTML、CSS、JavaScript和Vis.js构建。用户可以通过可视化图谱探索剧中四个主要家族（Kahnwald、Nielsen、Doppler、Tiedemann）之间的复杂关系，搭配Dark风格的背景音乐，增强沉浸感。
 
-## 当前特性（版本 9.1）
+## 当前特性（版本 10.0）
 - **可视化**：角色头像显示、关系连线标注（无箭头）、按时间线（1953、1986、2019）筛选。
-- **样式**：阴郁森林背景、三叉符号装饰、暗色调UI（深绿、灰色）。
+- **样式**：阴郁森林背景、三叉符号装饰、暗色调UI（深绿、灰色），连线和文字调亮以提升可读性。
 - **布局**：初次显示无重叠，节点间距500px，加载3秒后固定。
 - **音乐**：Dark风格背景音，默认音量30%，可播放/暂停。
 - **角色扩展**：覆盖第一季核心角色，共26人。
+- **多语言**：支持中文、日文、英文切换。
 
 ## 版本历史
 以下是开发过程中的主要版本演进：
@@ -52,12 +53,17 @@
     - 改动：调整边数据为对称关系（如“父子”“夫妻”），移除连线箭头。
     - 提交：`Updated edges with corrected relationships and removed arrows`
 
+11. **版本 10.0 - 多语言支持**
+    - 功能：添加中日英三语言切换，动态更新图谱和UI。
+    - 提交：`Added multi-language support for Chinese, Japanese, and English`
+
 ## 文件结构
 ```
-dark-family-tree/
+dark_topo/
 ├── index.html              # 主页面
 ├── script.js               # 图谱逻辑
-├── imgs/                 # 角色图片
+├── languages.js            # 多语言数据
+├── imgs/                   # 角色图片
 │   ├── jonas.jpg
 │   ├── michael.jpg
 │   └── ...
@@ -69,8 +75,9 @@ dark-family-tree/
 
 ## 使用方法
 1. 访问GitHub Pages：[https://x-hexy.github.io/dark_topo/](https://x-hexy.github.io/dark_topo/)
-2. 使用顶部时间线下拉菜单筛选角色。
-3. 点击右下角按钮控制背景音乐（首次需手动播放）。
+2. 使用顶部语言下拉菜单切换中日英。
+3. 使用顶部时间线下拉菜单筛选角色。
+4. 点击右下角按钮控制背景音乐（首次需手动播放）。
 
 ## 技术栈
 - **前端**：HTML、CSS、JavaScript
@@ -84,13 +91,14 @@ dark-family-tree/
 
 ## 下一步计划
 - 添加音量调节滑块。
-- 支持英文版切换。
+- 优化多语言切换的性能。
 - 扩展第二季角色（分阶段）。
+- 让用户可以自己添加人物关系。
 
 ## 注意事项
 - 背景音乐需用户首次交互（点击播放）才能生效，因浏览器限制。
 - 确保所有图片和音频文件正确上传至仓库对应路径。
 
 ---
-Created with ❤️ by [x-hexy] and Grok (xAI)
+Created with ❤️ by [x-hexy] and Grok (xAI)，Gemini
 
