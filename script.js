@@ -1,171 +1,199 @@
-// 节点数据
-var nodes = new vis.DataSet([
-    { id: 1, label: "Jonas\n(乔纳斯)", group: "Kahnwald", title: "2019年主角", image: "imgs/jonas.jpg" },
-    { id: 2, label: "Michael/Mikkel\n(迈克尔/米克尔)", group: "Kahnwald", title: "2019年Jonas的父亲，1986年穿越者", image: "imgs/michael.jpg" },
-    { id: 3, label: "Hannah\n(汉娜)", group: "Kahnwald", title: "Jonas的母亲", image: "imgs/hannah.jpg" },
-    { id: 4, label: "Ines\n(伊内斯)", group: "Kahnwald", title: "1986年收养Mikkel", image: "imgs/ines.jpg" },
-    { id: 5, label: "The Stranger\n(陌生人)", group: "Kahnwald", title: "2019年中年Jonas", image: "imgs/stranger.jpg" },
+// script.js
+const App = (function () { // Use IIFE to create a private scope
+    let currentLang = "zh"; // 默认中文
+    let network; // 全局网络对象
+    let audio; // 在initialize中定义
 
-    { id: 6, label: "Ulrich\n(乌尔里希)", group: "Nielsen", title: "2019年警察，Mikkel的父亲", image: "imgs/ulrich.jpg" },
-    { id: 7, label: "Katharina\n(卡塔琳娜)", group: "Nielsen", title: "Ulrich的妻子", image: "imgs/katharina.jpg" },
-    { id: 8, label: "Martha\n(玛莎)", group: "Nielsen", title: "Ulrich的女儿，Jonas的恋人", image: "imgs/martha.jpg" },
-    { id: 9, label: "Magnus\n(马格努斯)", group: "Nielsen", title: "Ulrich的长子", image: "imgs/magnus.jpg" },
-    { id: 10, label: "Tronte\n(特龙特)", group: "Nielsen", title: "Ulrich的父亲", image: "imgs/tronte.jpg" },
-    { id: 11, label: "Jana\n(亚娜)", group: "Nielsen", title: "Ulrich的母亲", image: "imgs/jana.jpg" },
-    { id: 12, label: "Mads\n(马兹)", group: "Nielsen", title: "Ulrich的弟弟，1986年失踪", image: "imgs/mads.jpg" },
-    { id: 13, label: "Agnes\n(阿格尼丝)", group: "Nielsen", title: "1953年Tronte的母亲", image: "imgs/agnes.jpg" },
+    const DEFAULT_AUDIO_VOLUME = 0.3;
+    const STABILIZATION_TIMEOUT = 2000;
+    const TIMELINE_FADE_TIMEOUT = 500;
+    const KAHNWALD_MAX_ID = 5;
+    const NIELSEN_MAX_ID = 13;
+    const DOPPLER_MAX_ID = 19;
+    const TIEDEMANN_MAX_ID = 24;
+    const GRAVITATIONAL_CONSTANT = -4000;
+    const CENTRAL_GRAVITY = 0.3;
+    const SPRING_LENGTH = 500;
+    const SPRING_CONSTANT = 0.05;
+    const DAMPING = 0.4;
+    const MIN_VELOCITY = 0.1;
 
-    { id: 14, label: "Charlotte\n(夏洛特)", group: "Doppler", title: "2019年警察局长", image: "imgs/charlotte.jpg" },
-    { id: 15, label: "Peter\n(彼得)", group: "Doppler", title: "Charlotte的丈夫", image: "imgs/peter.jpg" },
-    { id: 16, label: "Elisabeth\n(伊丽莎白)", group: "Doppler", title: "Charlotte的小女儿", image: "imgs/elisabeth.jpg" },
-    { id: 17, label: "Helge\n(黑尔格)", group: "Doppler", title: "2019/1986/1953年，绑架者", image: "imgs/helge.jpg" },
-    { id: 18, label: "Bernd\n(伯恩德)", group: "Doppler", title: "Helge的父亲，核电站创始人", image: "imgs/bernd.jpg" },
-    { id: 19, label: "Franziska\n(弗兰齐丝卡)", group: "Doppler", title: "Charlotte的大女儿", image: "imgs/franziska.jpg" },
-
-    { id: 20, label: "Claudia\n(克劳迪娅)", group: "Tiedemann", title: "1986年核电站负责人", image: "imgs/claudia.jpg" },
-    { id: 21, label: "Regina\n(雷吉娜)", group: "Tiedemann", title: "2019年旅馆老板", image: "imgs/regina.jpg" },
-    { id: 22, label: "Aleksander\n(亚历山大)", group: "Tiedemann", title: "Regina的丈夫", image: "imgs/aleksander.jpg" },
-    { id: 23, label: "Bartosz\n(巴托什)", group: "Tiedemann", title: "Regina的儿子", image: "imgs/bartosz.jpg" },
-    { id: 24, label: "Egon\n(埃贡)", group: "Tiedemann", title: "1986/1953年警察", image: "imgs/egon.jpg" },
-
-    { id: 25, label: "Noah\n(诺亚)", group: "Other", title: "2019/1986/1953年神秘牧师", image: "imgs/noah.jpg" },
-    { id: 26, label: "H.G. Tannhaus\n(塔恩豪斯)", group: "Other", title: "1986年钟表匠，时间机器制造者", image: "imgs/tannhaus.jpg" }
-]);
-
-// 边数据
-var edges = new vis.DataSet([
-    { from: 1, to: 2, label: "父子" },        // Jonas -> Michael (父子)
-    { from: 2, to: 3, label: "夫妻" },        // Michael -> Hannah (夫妻)
-    { from: 4, to: 2, label: "养母" },        // Ines -> Michael (不变)
-    { from: 1, to: 5, label: "未来自己" },    // Jonas -> Stranger (不变)
-    { from: 6, to: 2, label: "父子" },        // Ulrich -> Michael (父子)
-    { from: 6, to: 7, label: "夫妻" },        // Ulrich -> Katharina (夫妻)
-    { from: 6, to: 8, label: "父女" },        // Ulrich -> Martha (父女)
-    { from: 6, to: 9, label: "父子" },        // Ulrich -> Magnus (父子)
-    { from: 10, to: 6, label: "父子" },       // Tronte -> Ulrich (父子)
-    { from: 10, to: 11, label: "夫妻" },      // Tronte -> Jana (夫妻)
-    { from: 10, to: 12, label: "父子" },      // Tronte -> Mads (父子)
-    { from: 13, to: 10, label: "母子" },      // Agnes -> Tronte (母子)
-    { from: 1, to: 8, label: "恋人" },        // Jonas -> Martha (不变)
-    { from: 14, to: 15, label: "夫妻" },      // Charlotte -> Peter (夫妻)
-    { from: 14, to: 16, label: "母女" },      // Charlotte -> Elisabeth (母女)
-    { from: 14, to: 19, label: "母女" },      // Charlotte -> Franziska (母女)
-    { from: 17, to: 15, label: "父子" },      // Helge -> Peter (父子)
-    { from: 18, to: 17, label: "父子" },      // Bernd -> Helge (父子)
-    { from: 20, to: 21, label: "母女" },      // Claudia -> Regina (母女)
-    { from: 21, to: 22, label: "夫妻" },      // Regina -> Aleksander (夫妻)
-    { from: 21, to: 23, label: "母子" },      // Regina -> Bartosz (母子)
-    { from: 24, to: 20, label: "父女" },      // Egon -> Claudia (父女)
-    { from: 17, to: 25, label: "助手" },      // Helge -> Noah (不变)
-    { from: 23, to: 25, label: "合作者" },    // Bartosz -> Noah (不变)
-    { from: 5, to: 26, label: "时间机器提供者" }, // Stranger -> Tannhaus (不变)
-    { from: 26, to: 20, label: "技术顾问" }  // Tannhaus -> Claudia (方向调整)
-]);
-
-// 创建网络图
-var container = document.getElementById("graph");
-var data = { nodes: nodes, edges: edges };
-var options = {
-    nodes: {
-        shape: "image",
-        size: 50,
-        font: { size: 14, color: "#e0e0e0", face: "Roboto" },
-        labelHighlightBold: true,
-        borderWidth: 2,
-        shadow: true
-    },
-    edges: {
-        font: {
-            size: 16,           // 增大字号（从12到16）
-            color: "#ffffff",   // 改为纯白，提高对比度
-            face: "Roboto",
-            strokeWidth: 2,     // 加粗描边
-            strokeColor: "#000000" // 黑色描边增强文字清晰度
-        },
-        arrows: { to: { enabled: false } }, // 移除箭头
-        color: {
-            color: "#cccccc",   // 连线改为亮灰色（从#4a5a4a调亮）
-            highlight: "#ffffff" // 高亮时为纯白
-        },
-        width: 3              // 连线加粗（从默认1到3）
-    },
-    groups: {
-        Kahnwald: { color: { border: "#6a4e4e" } },
-        Nielsen: { color: { border: "#4e6a4e" } },
-        Doppler: { color: { border: "#4e4e6a" } },
-        Tiedemann: { color: { border: "#6a6a4e" } }
-    },
-    physics: {
-        enabled: true,
-        barnesHut: {
-            gravitationalConstant: -4000, // 增大斥力，避免重叠
-            centralGravity: 0.3,
-            springLength: 500, // 增大初始边长，确保间距
-            springConstant: 0.05,
-            damping: 0.4,
-            avoidOverlap: 1 // 强制避免重叠
-        },
-        stabilization: {
-            enabled: true,
-            iterations: 2000, // 增加迭代次数，预计算更精确
-            fit: true
-        },
-        minVelocity: 0.1,
-        solver: "barnesHut"
-    },
-    layout: {
-        improvedLayout: true
+    // Helper function to create node data (DRY)
+    function createNodeData(node) {
+        const group =
+            node.id <= KAHNWALD_MAX_ID ? "Kahnwald" :
+                node.id <= NIELSEN_MAX_ID ? "Nielsen" :
+                    node.id <= DOPPLER_MAX_ID ? "Doppler" :
+                        node.id <= TIEDEMANN_MAX_ID ? "Tiedemann" :
+                            "Other";
+        return {
+            ...node,
+            group: group,
+            image: `imgs/${node.label.split('\n')[0].toLowerCase().replace('/', '-')}.jpg`
+        };
     }
-};
-var network = new vis.Network(container, data, options);
 
-// 等待稳定化完成后再显示
-network.on("stabilizationIterationsDone", function () {
-    network.setOptions({ physics: { enabled: false } });
-    network.fit(); // 调整视角适配画布
-    console.log("Stabilization complete, layout fixed");
-});
+    // Initialize the network
+    function initNetwork(lang) {
+        const langData = languages[lang];
+        var nodes = new vis.DataSet(langData.nodes.map(createNodeData));
+        var edges = new vis.DataSet(langData.edges);
 
-// 强制3秒后固定（备用）
-setTimeout(function () {
-    network.setOptions({ physics: { enabled: false } });
-    network.fit();
-}, 2000);
+        var container = document.getElementById("graph");
+        var data = { nodes: nodes, edges: edges };
+        var options = {
+            nodes: {
+                shape: "image",
+                size: 50,
+                font: { size: 14, color: "#e0e0e0", face: "Roboto" },
+                labelHighlightBold: true,
+                borderWidth: 2,
+                shadow: true
+            },
+            edges: {
+                font: {
+                    size: 14,
+                    color: "#ffffff",
+                    face: "Roboto",
+                    strokeWidth: 2,
+                    strokeColor: "#000000"
+                },
+                color: {
+                    color: "#cccccc",
+                    highlight: "#ffffff"
+                },
+                width: 2,
+                arrows: { to: { enabled: false } }
+            },
+            groups: {
+                Kahnwald: { color: { border: "#6a4e4e" } },
+                Nielsen: { color: { border: "#4e6a4e" } },
+                Doppler: { color: { border: "#4e4e6a" } },
+                Tiedemann: { color: { border: "#6a6a4e" } },
+                Other: { color: { border: "#4a4a4a" } }
+            },
+            physics: {
+                enabled: true,
+                barnesHut: {
+                    gravitationalConstant: GRAVITATIONAL_CONSTANT,
+                    centralGravity: CENTRAL_GRAVITY,
+                    springLength: SPRING_LENGTH,
+                    springConstant: SPRING_CONSTANT,
+                    damping: DAMPING,
+                    avoidOverlap: 1
+                },
+                stabilization: {
+                    enabled: true,
+                    iterations: 2000,
+                    fit: true
+                },
+                minVelocity: MIN_VELOCITY,
+                solver: "barnesHut"
+            },
+            layout: { improvedLayout: true }
+        };
+        network = new vis.Network(container, data, options);
 
-// 时间线筛选功能
-document.getElementById("timeline").addEventListener("change", function () {
-    var selected = this.value;
-    var graph = document.getElementById("graph");
-    graph.classList.add("fade");
-    network.setOptions({ physics: { enabled: true } });
-    setTimeout(function () {
-        var filteredNodes = nodes.get().filter(function (node) {
-            return selected === "all" || node.title.includes(selected);
-        });
-        network.setData({ nodes: new vis.DataSet(filteredNodes), edges: edges });
-        graph.classList.remove("fade");
-        network.once("stabilizationIterationsDone", function () {
+        network.on("stabilizationIterationsDone", function () {
             network.setOptions({ physics: { enabled: false } });
             network.fit();
         });
+    }
+
+    // Update the language
+    function updateLanguage(lang) {
+        currentLang = lang;
+        const langData = languages[lang];
+        console.log("Updating language to:", lang); // 调试输出
+
+        // Update HTML elements with null checks
+        const title = document.getElementById("title");
+        const pageTitle = document.getElementById("pageTitle");
+        const languageLabel = document.getElementById("language_label");
+        const timelineLabel = document.getElementById("timeline_label");
+        const timeline = document.getElementById("timeline");
+        const musicButton = document.getElementById("musicButton");
+
+        if (title) title.textContent = langData.title;
+        else console.error("Element 'title' not found");
+        if (pageTitle) pageTitle.textContent = langData.title;
+        else console.error("Element 'pageTitle' not found");
+        if (languageLabel) languageLabel.textContent = langData.language_label;
+        else console.error("Element 'language_label' not found");
+        if (timelineLabel) timelineLabel.textContent = langData.timeline_label;
+        else console.error("Element 'timeline_label' not found");
+        if (timeline) {
+            Array.from(timeline.options).forEach((option) => {
+                option.text = langData.timeline_options[option.value];
+            });
+        } else console.error("Element 'timeline' not found");
+        if (musicButton) musicButton.textContent = audio.paused ? langData.music_play : langData.music_pause;
+        else console.error("Element 'musicButton' not found");
+
+        // Update the network with delay to ensure rendering
+        var graph = document.getElementById("graph");
+        if (graph) graph.classList.add("fade");
         setTimeout(function () {
-            network.setOptions({ physics: { enabled: false } });
-            network.fit();
-        }, 3000);
-    }, 500);
-});
-
-// 音乐控制函数
-var audio = document.getElementById("backgroundMusic");
-audio.volume = 0.3; // 设置音量，默认30%
-audio.play(); // 自动播放（浏览器可能限制，需用户交互）
-
-function toggleMusic() {
-    if (audio.paused) {
-        audio.play();
-        document.querySelector(".music-control button").textContent = "暂停";
-    } else {
-        audio.pause();
-        document.querySelector(".music-control button").textContent = "播放";
+            console.log("Updating network data for language:", lang); // 调试输出
+            network.setData({
+                nodes: new vis.DataSet(langData.nodes.map(createNodeData)),
+                edges: new vis.DataSet(langData.edges),
+            });
+            network.redraw(); // 强制重绘，确保图谱更新
+            network.fit(); // 调整视角
+            if (graph) graph.classList.remove("fade"); // 移除淡化效果
+        }, TIMELINE_FADE_TIMEOUT);
     }
-}
+
+    // Timeline changed
+    function handleTimelineChange(selected) {
+        var graph = document.getElementById("graph");
+        if (graph) graph.classList.add("fade");
+        setTimeout(function () {
+            console.log("Updating timeline to:", selected); // 调试输出
+            var filteredNodes = languages[currentLang].nodes
+                .filter((node) => selected === "all" || node.title.includes(selected))
+                .map(createNodeData);
+            network.setData({
+                nodes: new vis.DataSet(filteredNodes),
+                edges: new vis.DataSet(languages[currentLang].edges)
+            });
+            network.redraw(); // 强制重绘，确保图谱更新
+            network.fit(); // 调整视角
+            if (graph) graph.classList.remove("fade"); // 移除淡化效果
+        }, TIMELINE_FADE_TIMEOUT);
+    }
+
+    function toggleMusic() {
+        if (audio.paused) {
+            audio.play().catch(e => { console.error("Failed to play audio:", e); });
+            document.getElementById("musicButton").textContent = languages[currentLang].music_pause;
+        } else {
+            audio.pause();
+            document.getElementById("musicButton").textContent = languages[currentLang].music_play;
+        }
+    }
+
+    // Initialize
+    (function initialize() {
+        audio = document.getElementById("backgroundMusic"); // 在初始化时定义
+        initNetwork(currentLang);
+        audio.volume = DEFAULT_AUDIO_VOLUME;
+        audio.play().catch(e => { console.error("Failed to play audio:", e); });
+
+        document.getElementById("language").addEventListener("change", function () {
+            updateLanguage(this.value);
+        });
+
+        document.getElementById("timeline").addEventListener("change", function () {
+            handleTimelineChange(this.value);
+        });
+    })();
+
+    return {
+        toggleMusic: toggleMusic,
+    };
+})();
+
+// Export the method to global
+window.toggleMusic = App.toggleMusic;

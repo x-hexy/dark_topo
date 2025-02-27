@@ -43,7 +43,7 @@
             letter-spacing: 2px;
         }
 
-        .filter {
+        .controls {
             margin: 20px;
             background: rgba(0, 0, 0, 0.5);
             padding: 10px;
@@ -57,6 +57,7 @@
             border: 1px solid #3a4a3a;
             padding: 5px;
             font-family: 'Roboto', sans-serif;
+            margin-left: 10px;
         }
 
         #graph {
@@ -73,13 +74,39 @@
             opacity: 0.5;
             /* 切换时的淡出效果 */
         }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .music-control button {
+            background: #2a3a2a;
+            color: #e0e0e0;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+        }
+        .music-control button:hover {
+            background: #4a5a4a;
+        }
     </style>
 </head>
 
 <body>
-    <h1>《暗黑》人物关系图</h1>
-    <div class="filter">
-        <label>选择时间线：</label>
+    <h1 id="title">《暗黑》人物关系图</h1>
+    <div class="controls">
+        <label id="language_label">选择语言：</label>
+        <select id="language">
+            <option value="zh">中文</option>
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
+        </select>
+        <label id="timeline_label">选择时间线：</label>
         <select id="timeline">
             <option value="all">全部</option>
             <option value="1953">1953</option>
@@ -95,11 +122,13 @@
         你的浏览器不支持音频播放。
     </audio>
     <div class="music-control">
-        <button onclick="toggleMusic()">播放/暂停</button>
+        <!-- <button onclick="toggleMusic()">播放/暂停</button> -->
+        <button id="musicButton" onclick="toggleMusic()">播放/暂停</button>
     </div>
 
-    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-    <script src="script.js"></script>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js" defer></script>
+    <script src="languages.js" defer></script>
+    <script src="script.js" defer></script>
 </body>
 
 </html>
