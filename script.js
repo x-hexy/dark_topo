@@ -1,6 +1,7 @@
 // script.js
 const App = (function () { // Use IIFE to create a private scope
     let currentLang = "zh"; // 默认中文
+    let currentTimeline = "all"; // 新增：记录当前时间线，初始为“全部”
     let network; // 全局网络对象
     let audio; // 在initialize中定义
 
@@ -33,10 +34,15 @@ const App = (function () { // Use IIFE to create a private scope
         };
     }
 
+    // Helper function to filter nodes by timeline
+    function filterNodesByTimeline(nodes, timeline) {
+        return nodes.filter(node => timeline === "all" || node.title.includes(timeline));
+    }
+
     // Initialize the network
     function initNetwork(lang) {
         const langData = languages[lang];
-        var nodes = new vis.DataSet(langData.nodes.map(createNodeData));
+        var nodes = new vis.DataSet(filterNodesByTimeline(langData.nodes, currentTimeline).map(createNodeData));
         var edges = new vis.DataSet(langData.edges);
 
         var container = document.getElementById("graph");
@@ -104,9 +110,9 @@ const App = (function () { // Use IIFE to create a private scope
     function updateLanguage(lang) {
         currentLang = lang;
         const langData = languages[lang];
-        console.log("Updating language to:", lang); // 调试输出
+        console.log("Updating language to:", lang);
 
-        // Update HTML elements with null checks
+        // Update HTML elements immediately
         const title = document.getElementById("title");
         const pageTitle = document.getElementById("pageTitle");
         const languageLabel = document.getElementById("language_label");
@@ -134,33 +140,41 @@ const App = (function () { // Use IIFE to create a private scope
         var graph = document.getElementById("graph");
         if (graph) graph.classList.add("fade");
         setTimeout(function () {
-            console.log("Updating network data for language:", lang); // 调试输出
+            console.log("Updating network data for language:", lang, "with timeline:", currentTimeline);
+            var filteredNodes = filterNodesByTimeline(langData.nodes, currentTimeline);
             network.setData({
-                nodes: new vis.DataSet(langData.nodes.map(createNodeData)),
+                nodes: new vis.DataSet(filteredNodes.map(createNodeData)),
                 edges: new vis.DataSet(langData.edges),
             });
-            network.redraw(); // 强制重绘，确保图谱更新
-            network.fit(); // 调整视角
-            if (graph) graph.classList.remove("fade"); // 移除淡化效果
+            network.setOptions({ physics: { enabled: true } }); // 启用物理引擎调整布局
+            setTimeout(function () {
+                network.setOptions({ physics: { enabled: false } }); // 延迟关闭，确保布局完成
+                network.redraw(); // 强制重绘
+                network.fit(); // 调整视角
+                if (graph) graph.classList.remove("fade");
+            }, 1000); // 延迟1秒让物理引擎调整间距
         }, TIMELINE_FADE_TIMEOUT);
     }
 
     // Timeline changed
     function handleTimelineChange(selected) {
+        currentTimeline = selected; // 更新当前时间线
         var graph = document.getElementById("graph");
         if (graph) graph.classList.add("fade");
         setTimeout(function () {
-            console.log("Updating timeline to:", selected); // 调试输出
-            var filteredNodes = languages[currentLang].nodes
-                .filter((node) => selected === "all" || node.title.includes(selected))
-                .map(createNodeData);
+            console.log("Updating timeline to:", selected);
+            var filteredNodes = filterNodesByTimeline(languages[currentLang].nodes, selected);
             network.setData({
-                nodes: new vis.DataSet(filteredNodes),
+                nodes: new vis.DataSet(filteredNodes.map(createNodeData)),
                 edges: new vis.DataSet(languages[currentLang].edges)
             });
-            network.redraw(); // 强制重绘，确保图谱更新
-            network.fit(); // 调整视角
-            if (graph) graph.classList.remove("fade"); // 移除淡化效果
+            network.setOptions({ physics: { enabled: true } }); // 启用物理引擎调整布局
+            setTimeout(function () {
+                network.setOptions({ physics: { enabled: false } }); // 延迟关闭，确保布局完成
+                network.redraw(); // 强制重绘
+                network.fit(); // 调整视角
+                if (graph) graph.classList.remove("fade");
+            }, 1000); // 延迟1秒让物理引擎调整间距
         }, TIMELINE_FADE_TIMEOUT);
     }
 
@@ -176,7 +190,7 @@ const App = (function () { // Use IIFE to create a private scope
 
     // Initialize
     (function initialize() {
-        audio = document.getElementById("backgroundMusic"); // 在初始化时定义
+        audio = document.getElementById("backgroundMusic");
         initNetwork(currentLang);
         audio.volume = DEFAULT_AUDIO_VOLUME;
         audio.play().catch(e => { console.error("Failed to play audio:", e); });
